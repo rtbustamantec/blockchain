@@ -59,26 +59,30 @@ Block<T>* Blockchain<T>::getBlock(int block_index) {
 
 template <typename T>
 void Blockchain<T>::mine(Block<Record>* block, int flag) {
-  string previous_hash_code = last_block !=nullptr ? last_block->getHashCode() : "";
-  block->setPreviousHashCode(previous_hash_code);
-  block->proofOfWork();
+    string previous_hash_code = last_block !=nullptr ? last_block->getHashCode() : "";
+    if (!flag) {
+        Block<Record>* _last_block = getBlock(block->getIndex() - 1);
+        previous_hash_code = _last_block->getHashCode();
+    }
+    block->setPreviousHashCode(previous_hash_code);
+    block->proofOfWork();
 
 
-  last_block = block;
-  if (flag) {
-    block->setIndex(block_index);
-    block_index += 1;
-  }
+    last_block = block;
+    if (flag) {
+        block->setIndex(block_index);
+        block_index += 1;
+    }
 
 
-  block->print();
+    block->print();
 }
 
 template <typename T>
 void Blockchain<T>:: addBlock(Block<Record>* new_block) {
-  mine(new_block);
+    mine(new_block, true);
 
-  block_map[new_block->getIndex()] = new_block;
+    block_map[new_block->getIndex()] = new_block;
 }
 
 template <typename T>
@@ -189,7 +193,7 @@ void Blockchain<T>::searchByDestinatario(const string& destinatario) {
 
 template <typename T>
 void Blockchain<T>::cascadeRecalculation(int from_block_index) {
-  for (int i = from_block_index; i < block_index; i++) {
+    for (int i = from_block_index; i < block_index; i++) {
         Block<Record>* block = getBlock(i);
         mine(block, false);
     }

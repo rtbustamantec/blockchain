@@ -2,13 +2,13 @@
 #include <forward_list>
 using namespace std;
 
-const int K = 3; 
+const int K = 3;
 const float maxFillFactor = 0.4;
 
 template<typename TK, typename TV>
 class ChainHash{
-private:    
-    forward_list<pair<TK,TV>> *array; 
+private:
+    forward_list<pair<TK,TV>> *array;
     int capacity;
     int size;
 
@@ -20,8 +20,8 @@ public:
         array = new forward_list<pair<TK,TV>>[capacity];
     }
 
-    void insert(pair<TK,TV> par){   
-        if(fillFactor() > maxFillFactor) rehashing();    
+    void insert(pair<TK,TV> par){
+        if(fillFactor() > maxFillFactor) rehashing();
         size_t hashcode = hasher(par.first);
         int index = hashcode % capacity;
         //validar la existencia de la key
@@ -39,77 +39,77 @@ public:
     }
 
     int fillFactor(){
-      return number_of_elements() / (capacity * K);
+        return number_of_elements() / (capacity * K);
     }
 
     int number_of_elements(){
-      int elements = 0;
-      for(int i = 0; i < capacity; i++){
-        elements = elements + bucket_size(i);
-      }
-      return elements;
+        int elements = 0;
+        for(int i = 0; i < capacity; i++){
+            elements = elements + bucket_size(i);
+        }
+        return elements;
     }
     bool is_prime(int n) {
-      if (n <= 1) return false;
-      if (n <= 3) return true;
-      if (n % 2 == 0 || n % 3 == 0) return false;
-      int i = 5;
-      while (i * i <= n) {
-          if (n % i == 0 || n % (i + 2) == 0) {
-              return false;
-          }
-          i += 6;
-      }
-      return true;
+        if (n <= 1) return false;
+        if (n <= 3) return true;
+        if (n % 2 == 0 || n % 3 == 0) return false;
+        int i = 5;
+        while (i * i <= n) {
+            if (n % i == 0 || n % (i + 2) == 0) {
+                return false;
+            }
+            i += 6;
+        }
+        return true;
     }
 
     void rehashing(){
-      int new_capacity = capacity * 2 + 1;
-      while (!is_prime(new_capacity)) {
-          new_capacity += 2;
-      }
-      forward_list<pair<TK, TV>> *new_array = new forward_list<pair<TK, TV>>[new_capacity];
-      for(int i = 0; i < capacity; i++){
-          for(auto it = array[i].begin(); it != array[i].end(); it++){
-              size_t hashcode = hasher(it->first);
-              int index = hashcode % new_capacity;
-              new_array[index].push_front(*it);
-          }
-      }
-      delete[] this->array;
-      this->array = new_array;
-      this->capacity = new_capacity;
+        int new_capacity = capacity * 2 + 1;
+        while (!is_prime(new_capacity)) {
+            new_capacity += 2;
+        }
+        forward_list<pair<TK, TV>> *new_array = new forward_list<pair<TK, TV>>[new_capacity];
+        for(int i = 0; i < capacity; i++){
+            for(auto it = array[i].begin(); it != array[i].end(); it++){
+                size_t hashcode = hasher(it->first);
+                int index = hashcode % new_capacity;
+                new_array[index].push_front(*it);
+            }
+        }
+        delete[] this->array;
+        this->array = new_array;
+        this->capacity = new_capacity;
     }
 
     string search(string remitente){
-      size_t hashcode = hasher(remitente);
-      int index = hashcode % capacity;
-  
-      for(auto it = array[index].begin(); it != array[index].end(); it++){
-        cout<< it->second;
-      }
-      return ""; 
+        size_t hashcode = hasher(remitente);
+        int index = hashcode % capacity;
+
+        for(auto it = array[index].begin(); it != array[index].end(); it++){
+            cout<< it->second;
+        }
+        return "";
     }
-    
+
     typename forward_list<pair<TK,TV>>::iterator begin(int index){
-      return array[index].begin();
+        return array[index].begin();
     }
 
     typename forward_list<pair<TK,TV>>::iterator end(int index){
-      return array[index].end();
+        return array[index].end();
     }
 
     typename forward_list<pair<TK, TV>>::iterator find(const TK& key) {
-      size_t hashcode = hasher(key);
-      int index = hashcode % capacity;
-  
-      for (auto it = array[index].begin(); it != array[index].end(); it++) {
-          if (it->first == key) {
-              return it;
-          }
-      }
-  
-      return array[index].end();
+        size_t hashcode = hasher(key);
+        int index = hashcode % capacity;
+
+        for (auto it = array[index].begin(); it != array[index].end(); it++) {
+            if (it->first == key) {
+                return it;
+            }
+        }
+
+        return array[index].end();
     }
 
     void searchByRemitente(const TK& remitente) {
@@ -128,7 +128,7 @@ public:
         }
     }
 
- void searchByDestinatario(const TK& destinatario) {
+    void searchByDestinatario(const TK& destinatario) {
         for (int i = 0; i < capacity; ++i) {
             for (auto it = array[i].begin(); it != array[i].end(); ++it) {
                 if (it->second->destinatario == destinatario) {
@@ -143,5 +143,7 @@ public:
         }
     }
 };
+
+
 
 

@@ -48,11 +48,11 @@ public:
     }
 
     void setIndex(int index) {
-      this->index = index;
+        this->index = index;
     }
 
     void setPreviousHashCode(string previous_hash_code) {
-      this->previous_hash_code = previous_hash_code;
+        this->previous_hash_code = previous_hash_code;
     }
 
     int getIndex(){
@@ -68,7 +68,7 @@ public:
     }
 
     string getStringRecords(){
-      return string_records;
+        return string_records;
     }
 
     string getHashCode(){
@@ -80,20 +80,20 @@ public:
     }
 
     int getSize() {
-      return record_index + 1;
+        return record_index + 1;
     }
 
     int getCapacity() {
-      return capacity;
+        return capacity;
     }
 
     void generate_string_records() {
-      int count = 0;
-      string_records = "";
-      for (int i = 0; i < getSize() - 1; i++) {
-          Record* record = getRecord(i);
-          string_records.append(record->full_data());
-      }
+        int count = 0;
+        string_records = "";
+        for (int i = 0; i < getSize() - 1; i++) {
+            Record* record = getRecord(i);
+            string_records.append(record->full_data());
+        }
     }
 
     void print() {
@@ -110,21 +110,21 @@ public:
         record_index += 1;
     }
 
-  Record* getRecord(int record_index) {
-      int count = 0;
-      for (int i = 0; i < capacity; i++) {
-          auto it = records.begin(i);
-          auto end = records.end(i);
-          while (it != end) {
-              if (count == record_index) {
-                  return it->second;
-              }
-              ++it;
-              ++count;
-          }
-      }
-      return nullptr;
-  }
+    Record* getRecord(int record_index) {
+        int count = 0;
+        for (int i = 0; i < capacity; i++) {
+            auto it = records.begin(i);
+            auto end = records.end(i);
+            while (it != end) {
+                if (count == record_index) {
+                    return it->second;
+                }
+                ++it;
+                ++count;
+            }
+        }
+        return nullptr;
+    }
     // HASH CODE
 
     constexpr inline unsigned int RotateRight(unsigned int value,     unsigned int n) {

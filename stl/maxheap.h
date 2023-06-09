@@ -71,7 +71,7 @@ void MaxHeap<T>::insertar(double amount, const T& record) {
 
 template<typename T>
 void MaxHeap<T>::extraerMaximo() {
-  
+
     std::cout << "Registro máximo encontrado:" << std::endl;
     std::cout << "Remitente: " << heap[0].record->remitente << std::endl;
     std::cout << "Destinatario: " << heap[0].record->destinatario << std::endl;

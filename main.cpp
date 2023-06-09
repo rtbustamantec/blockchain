@@ -16,10 +16,10 @@
 using namespace std;
 
 tm parse_date(const string& date){
-  tm tm_date = {};
-  stringstream ss(date);
-  ss >> get_time(&tm_date, "%m/%d/%Y");
-  return tm_date;
+    tm tm_date = {};
+    stringstream ss(date);
+    ss >> get_time(&tm_date, "%m/%d/%Y");
+    return tm_date;
 }
 void printMenu() {
     cout << "======================================" << endl;
@@ -113,7 +113,7 @@ void updateRecord(Blockchain<Record>& chain) {
     chain.updateRecord(blockIndex, recordIndex, remitente, destinatario, monto, fecha);
 }
 
-int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, ChainHash<string, Record*> myhash_dest, MaxHeap<Record*> maxHeap, BSTree<float,Record*> &mytree_monto,BSTree<time_t,Record*> &mytree_fecha) {
+int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, ChainHash<string, Record*> &myhash_dest, MaxHeap<Record*> &maxHeap, BSTree<float,Record*> &mytree_monto,BSTree<time_t,Record*> &mytree_fecha) {
     Block<Record>* block = new Block<Record>();
 
     std::vector<std::vector<std::string>> data;
@@ -162,7 +162,7 @@ int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, Chain
     }
 
     delete block;
-  return true;
+    return true;
 }
 
 
