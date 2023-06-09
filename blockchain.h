@@ -22,6 +22,9 @@ private:
     int record_index;
     int block_index;
 
+    void cascadeRecalculation(int _block_index);
+    void printBlocks(int _block_index);
+
 public:
     Blockchain() {
         block_index = 0;
@@ -30,8 +33,8 @@ public:
     };
     void addRecord(Record* new_record);
     void addBlock(Block<Record>* new_block);
-    void mine(Block<Record>* block);
-    Block<T> getBlock(int block_index);
+    void mine(Block<Record>* block, int flag=true);
+    Block<T>* getBlock(int block_index);
     void searchByAmountRange(double min_amount, double max_amount);
     Record* getRecord(int block_index, int record_index);
     void searchByDateRange(const string& min_date, const string& max_date);
@@ -40,12 +43,13 @@ public:
     tm parseDate(const string& date);
     void searchByRemitente(const string& remitente);
     void searchByDestinatario(const string& destinatario);
-    
+    void updateRecord(int block_index, int record_index, string remitente, string destinatario, float monto, string fecha);
+
 };
 
 
 template <typename T>
-Block<T> Blockchain<T>::getBlock(int block_index) {
+Block<T>* Blockchain<T>::getBlock(int block_index) {
     auto it = block_map.find(block_index);
     if (it != block_map.end()) {
         return it->second;
@@ -54,25 +58,26 @@ Block<T> Blockchain<T>::getBlock(int block_index) {
 }
 
 template <typename T>
-void Blockchain<T>::mine(Block<Record>* block) {
+void Blockchain<T>::mine(Block<Record>* block, int flag) {
   string previous_hash_code = last_block !=nullptr ? last_block->getHashCode() : "";
-  block->setIndex(block_index);
   block->setPreviousHashCode(previous_hash_code);
   block->proofOfWork();
 
-  last_block = block;
-  block_index += 1;
 
-  cout << "ID " << block->getIndex() << endl;
-  cout << "PreviousHashCode " << block->getPreviousHashCode() << endl;
-  cout << "CurrentHashCode " << block->getHashCode() << endl;
-  cout << "--" << endl;
+  last_block = block;
+  if (flag) {
+    block->setIndex(block_index);
+    block_index += 1;
+  }
+
+
+  block->print();
 }
 
 template <typename T>
 void Blockchain<T>:: addBlock(Block<Record>* new_block) {
   mine(new_block);
-  
+
   block_map[new_block->getIndex()] = new_block;
 }
 
@@ -160,6 +165,8 @@ void Blockchain<T>::searchByRemitente(const string& remitente) {
     }
 }
 
+
+
 template <typename T>
 void Blockchain<T>::searchByDestinatario(const string& destinatario) {
     cout << "Registros encontrados para el destinatario \"" << destinatario << "\":" << endl;
@@ -180,20 +187,49 @@ void Blockchain<T>::searchByDestinatario(const string& destinatario) {
     }
 }
 
-// template <typename T>
-// void Blockchain<T>::updateRecord(int block_index, int record_index, const string& remitente, const string& destinatario, float monto, const string& fecha) {
-//     Block<Record>* block = getBlock(block_index);
-//     if (block != nullptr) {
-//         Record* record = block->getRecord(record_index);
-//         if (record != nullptr) {
-//             record->remitente = remitente;
-//             record->destinatario = destinatario;
-//             record->monto = monto;
-//             record->fecha = fecha;
-//         } else {
-//             cout << "No se encontró el registro en el índice especificado." << endl;
-//         }
-//     } else {
-//         cout << "No se encontró el bloque en el índice especificado." << endl;
-//     }
-// }
+template <typename T>
+void Blockchain<T>::cascadeRecalculation(int from_block_index) {
+  for (int i = from_block_index; i < block_index; i++) {
+        Block<Record>* block = getBlock(i);
+        mine(block, false);
+    }
+}
+
+template <typename T>
+void Blockchain<T>::printBlocks(int from_block_index) {
+    for (int i = from_block_index; i < block_index; i++) {
+        Block<Record>* block = getBlock(i);
+        block->print();
+    }
+}
+
+template <typename T>
+void Blockchain<T>::updateRecord(int _block_index, int _record_index, string remitente, string destinatario, float monto, string fecha) {
+    Block<Record>* block = getBlock(_block_index);
+    if (block != nullptr) {
+        Record* record = block->getRecord(_record_index);
+        if (record != nullptr) {
+            record->remitente = remitente;
+            record->destinatario = destinatario;
+            record->monto = monto;
+            record->fecha = fecha;
+
+            cout << "------------------------" << endl;
+            cout << "--BLOQUES POR RECALCULAR" << endl;
+            cout << "------------------------" << endl;
+            printBlocks(_block_index);
+
+            block->generate_string_records();
+
+            cout << "------------------------" << endl;
+            cout << "--BLOQUES RECALCULADOS" << endl;
+            cout << "------------------------" << endl;
+            cascadeRecalculation(_block_index);
+
+        } else {
+            cout << "No se encontró el registro en el índice especificado." << endl;
+        }
+    } else {
+        cout << "No se encontró el bloque en el índice especificado." << endl;
+    }
+}

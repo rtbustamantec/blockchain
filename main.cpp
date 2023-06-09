@@ -61,7 +61,7 @@ void searchByDateRange(BSTree<time_t,Record*> &mytree) {
     cin >> fecha_fin;
     fecha_fin_parse = parse_date(fecha_fin);
     fecha_fin_r = mktime(&fecha_fin_parse);
-  
+
     cout << "Búsqueda por rango de fechas" << endl;
     mytree.search_in_range_date(fecha_ini_r,fecha_fin_r);
 }
@@ -93,9 +93,9 @@ void extractMaxRecord(MaxHeap<Record*>& maxHeap) {
 
 void updateRecord(Blockchain<Record>& chain) {
     int blockIndex, recordIndex;
-    string remitente, detinatario, fecha;
+    string remitente, destinatario, fecha;
     float monto;
-  
+
     cout << "Ingrese el ID del nodo a modificar: ";
     cin >> blockIndex;
     cout << "Ingrese el ID del registro a modificar en el nodo: ";
@@ -104,18 +104,18 @@ void updateRecord(Blockchain<Record>& chain) {
     cout << "Ingrese el nombre del remitente: ";
     cin >> remitente;
     cout << "Ingrese el nombre del destinatario: ";
-    cin >> detinatario;
+    cin >> destinatario;
     cout << "Ingrese el monto: ";
     cin >> monto;
     cout << "Ingrese fecha: ";
     cin >> fecha;
-  
-//     chain.updateRecord(blockIndex, recordIndex, remitente, detinatario, monto, fecha);
+
+    chain.updateRecord(blockIndex, recordIndex, remitente, destinatario, monto, fecha);
 }
 
 int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, ChainHash<string, Record*> myhash_dest, MaxHeap<Record*> maxHeap, BSTree<float,Record*> &mytree_monto,BSTree<time_t,Record*> &mytree_fecha) {
     Block<Record>* block = new Block<Record>();
-  
+
     std::vector<std::vector<std::string>> data;
     std::ifstream file("datos_proyecto.csv");
     if (!file) {
@@ -123,14 +123,14 @@ int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, Chain
         return false;
     }
     std::string line;
-  
+
     Record* record;
-  
+
     while (std::getline(file, line)) {
         std::vector<std::string> row;
         std::stringstream ss(line);
         std::string value;
-        
+
         while (std::getline(ss, value, ',')) {
             row.push_back(value);
         }
@@ -147,25 +147,25 @@ int loadData(Blockchain<Record>& chain, ChainHash<string, Record*> myhash, Chain
 
             block->insert(new_record);
 
-            
+
             mytree_monto.insert_r(make_pair(new_record->monto, new_record));
 
             string fecha_f = row[3];
             tm fecha_parse = parse_date(fecha_f);
             time_t fecha_t = mktime(&fecha_parse);
             mytree_fecha.insert_r(make_pair(fecha_t, new_record));
-          
+
             myhash.insert(make_pair(new_record->remitente, new_record));
             myhash_dest.insert(make_pair(new_record->destinatario, new_record));
             maxHeap.insertar(new_record->monto, new_record);
         }
     }
-  
+
     delete block;
   return true;
 }
 
- 
+
 int main() {
     Blockchain<Record>* chain = new Blockchain<Record>();
     ChainHash<string, Record*> myhash;
@@ -208,8 +208,3 @@ int main() {
 
     return 0;
 }
-
-
-
-
-

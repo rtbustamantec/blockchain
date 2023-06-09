@@ -67,6 +67,10 @@ public:
         return "";
     }
 
+    string getStringRecords(){
+      return string_records;
+    }
+
     string getHashCode(){
         return current_hash_code;
     }
@@ -81,6 +85,22 @@ public:
 
     int getCapacity() {
       return capacity;
+    }
+
+    void generate_string_records() {
+      int count = 0;
+      string_records = "";
+      for (int i = 0; i < getSize() - 1; i++) {
+          Record* record = getRecord(i);
+          string_records.append(record->full_data());
+      }
+    }
+
+    void print() {
+        cout << "ID: " << index << endl;
+        cout << "PreviousHashCode: " << previous_hash_code << endl;
+        cout << "CurrentHashCode: " << current_hash_code << endl;
+        cout << "------------------------" << endl;
     }
 
     void insert(Record* new_record) {
